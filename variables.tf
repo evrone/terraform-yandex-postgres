@@ -1,3 +1,41 @@
+variable "postgresql_config" {
+  description = "User defined postgresql settings"
+  type = list(object({
+  }))
+}
+
+variable "config" {
+  description = "for dynamic block 'config' "
+  type = list(object({
+    backup_retain_period_days = number
+    version                   = number
+      # type = list(object({
+      # }))
+  }))
+  default = [{
+    backup_retain_period_days = 7
+    version                   = 14
+      # postgresql_config = [{
+      #   auto_explain_log_buffers = true
+      # }]
+
+  }]
+}
+
+variable "resources" {
+  description = "for dynamic block 'resources' "
+  type = list(object({
+    resource_preset_id = string
+    disk_type_id       = string
+    disk_size          = number
+  }))
+  default = [{
+    resource_preset_id = "b1.nano"
+    disk_type_id       = "network-hdd"
+    disk_size          = 10
+  }]
+}
+
 # yandex_mdb_postgresql_cluster vars
 variable "cluster_name" {
   type        = string
@@ -10,20 +48,20 @@ variable "environment" {
   description = "PRODUCTION or PRESTABLE. Prestable gets updates before production environment"
 }
 
-variable "backup_retain_period_days" {
-  type    = number
-  default = 14
-}
+# variable "backup_retain_period_days" {
+#   type    = number
+#   default = 14
+# }
 
 variable "network_id" {
   type = string
 }
 
-variable "database_version" {
-  type        = string
-  default     = "14"
-  description = "Version of PostgreSQL"
-}
+# variable "database_version" {
+#   type        = string
+#   default     = "14"
+#   description = "Version of PostgreSQL"
+# }
 
 variable "resource_preset_id" {
   type        = string

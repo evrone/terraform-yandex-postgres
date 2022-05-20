@@ -1,30 +1,28 @@
 resource "yandex_mdb_postgresql_cluster" "managed_postgresql_cluster" {
+
   name        = var.cluster_name
   network_id  = var.network_id
   environment = var.environment
 
-  config {
-    version                   = var.database_version
-    backup_retain_period_days = var.backup_retain_period_days
+  dynamic "config" {
+    for_each = var.config
+    content {
+      version                   = config.value["version"]
+      backup_retain_period_days = config.value["backup_retain_period_days"]
 
-    resources {
-      resource_preset_id = var.resource_preset_id
-      disk_type_id       = var.disk_type_id
-      disk_size          = var.disk_size
-    }
+      dynamic "resources" {
+        for_each = var.resources
+        content {
+          resource_preset_id = resources.value["resource_preset_id"]
+          disk_type_id       = resources.value["disk_type_id"]
+          disk_size          = resources.value["disk_size"]
+        }
+      }
 
-    pooler_config {
-      pool_discard = var.pool_discard
-      pooling_mode = var.pooling_mode
-    }
+      postgresql_config = {
+        log_error_verbosity = config.value["version"] #config.value["version"]
+      }
 
-    postgresql_config = {
-      max_connections                   = var.max_connections
-      enable_parallel_hash              = var.enable_parallel_hash
-      vacuum_cleanup_index_scale_factor = var.vacuum_cleanup_index_scale_factor
-      autovacuum_vacuum_scale_factor    = var.autovacuum_vacuum_scale_factor
-      default_transaction_isolation     = var.default_transaction_isolation
-      shared_preload_libraries          = var.shared_preload_libraries
     }
   }
 

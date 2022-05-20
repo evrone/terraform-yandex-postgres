@@ -13,6 +13,7 @@ resource "yandex_vpc_subnet" "foo" {
   v4_cidr_blocks = ["10.5.0.0/24"]
 }
 
+
 ################################################################################
 # Yandex Cloud Managed PostgreSQL Module
 ################################################################################
@@ -30,9 +31,14 @@ module "mdb_postgresql" {
     hour = 12
   }
 
-  resource_preset_id = "b1.nano"
-  disk_size          = 10
-  disk_type_id       = "network-hdd"
+  postgresql_config = [{
+    auto_explain_log_buffers = true
+    log_error_verbosity = "LOG_ERROR_VERBOSITY_UNSPECIFIED"
+  }]
+
+  # resource_preset_id = "b1.nano"
+  # disk_size          = 10
+  # disk_type_id       = "network-hdd"
 
   databases = {
     test_db = {

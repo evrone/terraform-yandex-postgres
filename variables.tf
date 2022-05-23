@@ -1,42 +1,36 @@
-variable "postgresql_config" {
-  description = "User defined postgresql settings"
-  type = list(object({
-  }))
-}
+# yandex_mdb_postgresql_cluster vars
 
 variable "config" {
   description = "for dynamic block 'config' "
   type = list(object({
     backup_retain_period_days = number
     version                   = number
-      # type = list(object({
-      # }))
-  }))
-  default = [{
-    backup_retain_period_days = 7
-    version                   = 14
-      # postgresql_config = [{
-      #   auto_explain_log_buffers = true
-      # }]
+    postgresql_config = object({
+      max_connections                   = number
+      enable_parallel_hash              = bool
+      vacuum_cleanup_index_scale_factor = number
+      autovacuum_vacuum_scale_factor    = number
+      default_transaction_isolation     = string
+      shared_preload_libraries          = string
+    })
+    backup_window_start = object({
+      hour   = number
+      minute = number
+    })
+    performance_diagnostics = object({
+      enabled                      = bool
+      sessions_sampling_interval   = number
+      statements_sampling_interval = number
+    })
+    resources = object({
+      resource_preset_id = string
+      disk_type_id       = string
+      disk_size          = number
+    })
 
-  }]
+  }))
 }
 
-variable "resources" {
-  description = "for dynamic block 'resources' "
-  type = list(object({
-    resource_preset_id = string
-    disk_type_id       = string
-    disk_size          = number
-  }))
-  default = [{
-    resource_preset_id = "b1.nano"
-    disk_type_id       = "network-hdd"
-    disk_size          = 10
-  }]
-}
-
-# yandex_mdb_postgresql_cluster vars
 variable "cluster_name" {
   type        = string
   description = "Unique for the cloud name of a cluster"
@@ -48,70 +42,8 @@ variable "environment" {
   description = "PRODUCTION or PRESTABLE. Prestable gets updates before production environment"
 }
 
-# variable "backup_retain_period_days" {
-#   type    = number
-#   default = 14
-# }
-
 variable "network_id" {
   type = string
-}
-
-# variable "database_version" {
-#   type        = string
-#   default     = "14"
-#   description = "Version of PostgreSQL"
-# }
-
-variable "resource_preset_id" {
-  type        = string
-  default     = "s2.small"
-  description = "Id of a resource preset which means count of vCPUs and amount of RAM per host"
-}
-
-variable "disk_type_id" {
-  type        = string
-  default     = "network-ssd"
-  description = "Disk type: 'network-ssd', 'network-hdd', 'local-ssd'"
-}
-
-variable "disk_size" {
-  type        = number
-  default     = 20
-  description = "Disk size in GiB"
-}
-
-variable "max_connections" {
-  type        = string
-  default     = 395
-  description = "determines the maximum number of concurrent connections to the database server"
-}
-
-variable "enable_parallel_hash" {
-  type    = bool
-  default = true
-}
-
-variable "vacuum_cleanup_index_scale_factor" {
-  type    = number
-  default = 0.2
-}
-
-variable "autovacuum_vacuum_scale_factor" {
-  type    = number
-  default = 0.34
-}
-
-variable "default_transaction_isolation" {
-  type        = string
-  default     = "TRANSACTION_ISOLATION_READ_COMMITTED"
-  description = "This setting defines the default isolation level to be set for all new SQL transactions"
-}
-
-variable "shared_preload_libraries" {
-  type        = string
-  default     = "SHARED_PRELOAD_LIBRARIES_AUTO_EXPLAIN,SHARED_PRELOAD_LIBRARIES_PG_HINT_PLAN"
-  description = "determining which libraries are to be loaded when PostgreSQL starts"
 }
 
 # Optional user variables for postgresql

@@ -25,3 +25,7 @@ output "user_passwords" {
     for user in yandex_mdb_postgresql_cluster.managed_postgresql_cluster.user : user.name => user.password
   }
 }
+
+output "postgresql_config" {
+  value = yandex_mdb_postgresql_cluster.managed_postgresql_cluster.config[0].postgresql_config
+}

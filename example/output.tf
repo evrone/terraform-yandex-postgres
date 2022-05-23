@@ -21,3 +21,9 @@ output "user_passwords" {
   value     = module.mdb_postgresql.user_passwords
   sensitive = true
 }
+
+output "postgresql_config" {
+  value     = module.mdb_postgresql.postgresql_config
+  sensitive = false
+}
+

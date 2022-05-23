@@ -1,5 +1,4 @@
 resource "yandex_mdb_postgresql_cluster" "managed_postgresql_cluster" {
-
   name        = var.cluster_name
   network_id  = var.network_id
   environment = var.environment
@@ -10,19 +9,26 @@ resource "yandex_mdb_postgresql_cluster" "managed_postgresql_cluster" {
       version                   = config.value["version"]
       backup_retain_period_days = config.value["backup_retain_period_days"]
 
-      dynamic "resources" {
-        for_each = var.resources
-        content {
-          resource_preset_id = resources.value["resource_preset_id"]
-          disk_type_id       = resources.value["disk_type_id"]
-          disk_size          = resources.value["disk_size"]
-        }
+      resources {
+        resource_preset_id = config.value.resources["resource_preset_id"]
+        disk_type_id       = config.value.resources["disk_type_id"]
+        disk_size          = config.value.resources["disk_size"]
       }
 
       postgresql_config = {
-        log_error_verbosity = config.value["version"] #config.value["version"]
+        for k, v in config.value.postgresql_config : k => v
       }
 
+      backup_window_start {
+        hours   = config.value.backup_window_start["hour"]
+        minutes = config.value.backup_window_start["minute"]
+      }
+
+      performance_diagnostics {
+        enabled                      = config.value.performance_diagnostics["enabled"]
+        sessions_sampling_interval   = config.value.performance_diagnostics["sessions_sampling_interval"]
+        statements_sampling_interval = config.value.performance_diagnostics["statements_sampling_interval"]
+      }
     }
   }
 

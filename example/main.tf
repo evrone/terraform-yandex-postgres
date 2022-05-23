@@ -14,6 +14,7 @@ resource "yandex_vpc_subnet" "foo" {
 }
 
 
+
 ################################################################################
 # Yandex Cloud Managed PostgreSQL Module
 ################################################################################
@@ -31,14 +32,32 @@ module "mdb_postgresql" {
     hour = 12
   }
 
-  postgresql_config = [{
-    auto_explain_log_buffers = true
-    log_error_verbosity = "LOG_ERROR_VERBOSITY_UNSPECIFIED"
+  config = [{
+    version                   = 14
+    backup_retain_period_days = 7
+    postgresql_config = {
+      max_connections                   = 395
+      enable_parallel_hash              = true
+      vacuum_cleanup_index_scale_factor = 0.2
+      autovacuum_vacuum_scale_factor    = 0.34
+      default_transaction_isolation     = "TRANSACTION_ISOLATION_READ_COMMITTED"
+      shared_preload_libraries          = "SHARED_PRELOAD_LIBRARIES_AUTO_EXPLAIN,SHARED_PRELOAD_LIBRARIES_PG_HINT_PLAN"
+    }
+    backup_window_start = {
+      hour   = 10
+      minute = 0
+    }
+    performance_diagnostics = {
+      enabled                      = false
+      sessions_sampling_interval   = 60
+      statements_sampling_interval = 600
+    }
+    resources = {
+      resource_preset_id = "b1.nano"
+      disk_type_id       = "network-hdd"
+      disk_size          = 10
+    }
   }]
-
-  # resource_preset_id = "b1.nano"
-  # disk_size          = 10
-  # disk_type_id       = "network-hdd"
 
   databases = {
     test_db = {
@@ -46,7 +65,7 @@ module "mdb_postgresql" {
       lc_collate = "en_US.UTF-8"
       lc_type    = "en_US.UTF-8"
     },
-    test2_db = {
+    test22_db = {
       owner      = "test2_user"
       lc_collate = "en_US.UTF-8"
       lc_type    = "en_US.UTF-8"
@@ -68,7 +87,16 @@ module "mdb_postgresql" {
       conn_limit = 20
       permissions = [
         {
-          database_name = "test2_db"
+          database_name = "test22_db"
+        }
+      ]
+    },
+    test3_user = {
+      password   = "test2_user@!!#"
+      conn_limit = 20
+      permissions = [
+        {
+          database_name = "test22_db"
         }
       ]
     }

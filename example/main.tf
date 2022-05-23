@@ -44,7 +44,7 @@ module "mdb_postgresql" {
       shared_preload_libraries          = "SHARED_PRELOAD_LIBRARIES_AUTO_EXPLAIN,SHARED_PRELOAD_LIBRARIES_PG_HINT_PLAN"
     }
     backup_window_start = {
-      hour   = 10
+      hour   = 0
       minute = 0
     }
     performance_diagnostics = {
@@ -65,7 +65,7 @@ module "mdb_postgresql" {
       lc_collate = "en_US.UTF-8"
       lc_type    = "en_US.UTF-8"
     },
-    test22_db = {
+    test2_db = {
       owner      = "test2_user"
       lc_collate = "en_US.UTF-8"
       lc_type    = "en_US.UTF-8"
@@ -87,16 +87,7 @@ module "mdb_postgresql" {
       conn_limit = 20
       permissions = [
         {
-          database_name = "test22_db"
-        }
-      ]
-    },
-    test3_user = {
-      password   = "test2_user@!!#"
-      conn_limit = 20
-      permissions = [
-        {
-          database_name = "test22_db"
+          database_name = "test2_db"
         }
       ]
     }
